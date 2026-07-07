@@ -1,52 +1,25 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>圖片搜尋系統</title>
-    <style>
-        .image-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-        .image-item { width: 150px; text-align: center; }
-        .image-item img { width: 100%; height: auto; border-radius: 8px; }
-    </style>
-</head>
 <body>
-
-    <input type="text" id="searchInput" placeholder="輸入搜尋關鍵字 (例如: 3斑比)">
-    <button onclick="doSearch()">搜尋</button>
-
-    <div id="results" class="image-container"></div>
+    <input type="text" id="q" placeholder="例如: 3斑比">
+    <button onclick="search()">搜尋</button>
+    <div id="res"></div>
 
     <script>
-        const scriptUrl = "https://script.google.com/macros/s/AKfycbzlx2FwzCjxBIPSfuSVw75_t4OOO0EbTLLasQaFTOKUrqGd1MeLk2m0IPvYw4xhJ6NZ/exec";
-
-        async function doSearch() {
-            const q = document.getElementById('searchInput').value;
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = "搜尋中...";
-
+        const url = "https://script.google.com/macros/s/AKfycbzlx2FwzCjxBIPSfuSVw75_t4OOO0EbTLLasQaFTOKUrqGd1MeLk2m0IPvYw4xhJ6NZ/exec";
+        
+        async function search() {
+            const q = document.getElementById('q').value;
+            const res = document.getElementById('res');
+            res.innerHTML = "讀取中...";
             try {
-                // 發送請求，加上 Date.now() 防止快取
-                const response = await fetch(`${scriptUrl}?q=${encodeURIComponent(q)}&t=${Date.now()}`);
-                const data = await response.json();
-
-                resultsDiv.innerHTML = ""; // 清空畫面
-
-                if (data.error) {
-                    resultsDiv.innerHTML = "錯誤: " + data.error;
-                } else if (data.length === 0) {
-                    resultsDiv.innerHTML = "找不到相關照片";
-                } else {
-                    data.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'image-item';
-                        div.innerHTML = `<img src="${item.url}" alt="${item.name}"><p>${item.name}</p>`;
-                        resultsDiv.appendChild(div);
-                    });
-                }
-            } catch (error) {
-                resultsDiv.innerHTML = "連線失敗，請檢查網路或部署狀態";
-                console.error(error);
-            }
+                const r = await fetch(`${url}?q=${encodeURIComponent(q)}&t=${Date.now()}`);
+                const d = await r.json();
+                res.innerHTML = "";
+                if(d.error) res.innerHTML = "錯誤: " + d.error;
+                else if(d.length === 0) res.innerHTML = "找不到檔案";
+                else d.forEach(i => res.innerHTML += `<p>${i.name}: <a href="${i.url}" target="_blank">下載連結</a></p>`);
+            } catch(e) { res.innerHTML = "連線失敗"; }
         }
     </script>
 </body>
