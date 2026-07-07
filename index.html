@@ -1,37 +1,51 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>享樂照片搜尋</title>
+    <title>圖片搜尋系統</title>
+    <style>
+        .image-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+        .image-item { width: 150px; text-align: center; }
+        .image-item img { width: 100%; height: auto; border-radius: 8px; }
+    </style>
 </head>
-<body style="background:#000; color:#D4AF37; text-align:center; padding:20px;">
-    <h1>享樂照片搜尋</h1>
-    <input type="text" id="query" placeholder="範例: 3斑比">
-    <button onclick="search()">搜尋</button>
-    <div id="result" style="margin-top:20px;"></div>
+<body>
+
+    <input type="text" id="searchInput" placeholder="輸入搜尋關鍵字 (例如: 3斑比)">
+    <button onclick="doSearch()">搜尋</button>
+
+    <div id="results" class="image-container"></div>
 
     <script>
-        async function search() {
-            const q = document.getElementById("query").value;
-            const res = document.getElementById("result");
-            const url = "https://script.google.com/macros/s/AKfycbzlx2FwzCjxBIPSfuSVw75_t4OOO0EbTLLasQaFTOKUrqGd1MeLk2m0IPvYw4xhJ6NZ/exec?q=" + encodeURIComponent(q);
-            
-            res.innerHTML = "搜尋中...";
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbzlx2FwzCjxBIPSfuSVw75_t4OOO0EbTLLasQaFTOKUrqGd1MeLk2m0IPvYw4xhJ6NZ/exec";
+
+        async function doSearch() {
+            const q = document.getElementById('searchInput').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = "搜尋中...";
+
             try {
-                const response = await fetch(url);
+                // 發送請求，加上 Date.now() 防止快取
+                const response = await fetch(`${scriptUrl}?q=${encodeURIComponent(q)}&t=${Date.now()}`);
                 const data = await response.json();
-                console.log("後端回傳資料:", data); // 按 F12 查看這裡
-                
-                res.innerHTML = "";
-                if(data && data.length > 0) {
-                    data.forEach(item => {
-                        res.innerHTML += `<div><img src="${item.url}" alt="${item.name}" style="max-width:300px;"><p>${item.name}</p></div>`;
-                    });
+
+                resultsDiv.innerHTML = ""; // 清空畫面
+
+                if (data.error) {
+                    resultsDiv.innerHTML = "錯誤: " + data.error;
+                } else if (data.length === 0) {
+                    resultsDiv.innerHTML = "找不到相關照片";
                 } else {
-                    res.innerHTML = "找不到檔案 (可能是該資料夾沒有包含此關鍵字的檔案)";
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'image-item';
+                        div.innerHTML = `<img src="${item.url}" alt="${item.name}"><p>${item.name}</p>`;
+                        resultsDiv.appendChild(div);
+                    });
                 }
-            } catch(e) { 
-                res.innerHTML = "讀取錯誤: " + e; 
+            } catch (error) {
+                resultsDiv.innerHTML = "連線失敗，請檢查網路或部署狀態";
+                console.error(error);
             }
         }
     </script>
