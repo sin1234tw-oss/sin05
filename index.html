@@ -4,50 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>享樂照片搜尋</title>
-    <link rel="manifest" href="manifest.json">
     <style>
         body { background: #000; color: #D4AF37; font-family: sans-serif; text-align: center; padding: 20px; }
         h1 { text-shadow: 0 0 10px #D4AF37; }
         .input-group { margin: 30px 0; }
-        input { padding: 12px; width: 250px; background: #111; border: 2px solid #D4AF37; color: #fff; border-radius: 5px; }
-        button { padding: 12px 25px; background: #D4AF37; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; }
+        input { padding: 12px; width: 250px; background: #111; border: 2px solid #D4AF37; color: #fff; border-radius: 5px; outline: none; }
+        button { padding: 12px 25px; background: #D4AF37; border: none; cursor: pointer; font-weight: bold; border-radius: 5px; margin-left: 5px; }
         #result { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 30px; }
-        img { max-width: 300px; border: 2px solid #D4AF37; box-shadow: 0 0 10px #D4AF37; }
+        img { max-width: 300px; border: 2px solid #D4AF37; box-shadow: 0 0 10px #D4AF37; border-radius: 5px; }
+        p { color: #888; }
     </style>
 </head>
 <body>
     <h1>享樂照片搜尋</h1>
     <div class="input-group">
-        <input type="text" id="query" placeholder="格式: 1-照片名稱">
+        <input type="text" id="query" placeholder="範例: 3斑比">
         <button onclick="searchPhoto()">搜尋</button>
     </div>
     <div id="result"></div>
 
     <script>
+        // 請確保這裡是你的 GAS 部署網址 (結尾要是 /exec)
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzlx2FwzCjxBIPSfuSVw75_t4OOO0EbTLLasQaFTOKUrqGd1MeLk2m0IPvYw4xhJ6NZ/exec";
         
         async function searchPhoto() {
             const query = document.getElementById("query").value;
             const resultDiv = document.getElementById("result");
-            resultDiv.innerHTML = "搜尋中...";
+            
+            if(!query) return;
+            
+            resultDiv.innerHTML = "<p>搜尋中，請稍候...</p>";
             try {
                 const res = await fetch(GAS_URL + "?q=" + encodeURIComponent(query));
                 const data = await res.json();
+                
                 resultDiv.innerHTML = "";
                 if (data.length > 0) {
                     data.forEach(item => {
                         resultDiv.innerHTML += `<img src="${item.url}" alt="${item.name}">`;
                     });
                 } else {
-                    resultDiv.innerHTML = "<p>找不到喔！</p>";
+                    resultDiv.innerHTML = "<p>找不到喔！請檢查館別編號或名稱是否正確。</p>";
                 }
             } catch (e) {
-                resultDiv.innerHTML = "<p>連線失敗，請檢查權限設定。</p>";
+                resultDiv.innerHTML = "<p>連線失敗，請檢查網路或是 GAS 權限設定。</p>";
             }
-        }
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
         }
     </script>
 </body>
