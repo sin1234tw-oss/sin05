@@ -2,13 +2,15 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>享樂照片搜尋</title>
     <style>
         body { background: #000; color: #D4AF37; font-family: sans-serif; text-align: center; padding: 20px; }
-        input { padding: 12px; width: 250px; background: #111; border: 2px solid #D4AF37; color: #fff; border-radius: 5px; }
-        button { padding: 12px 25px; background: #D4AF37; border: none; cursor: pointer; border-radius: 5px; }
-        #result { margin-top: 30px; }
-        img { max-width: 300px; display: block; margin: 10px auto; border: 2px solid #D4AF37; }
+        input { padding: 12px; width: 250px; background: #111; border: 2px solid #D4AF37; color: #fff; border-radius: 5px; font-size: 16px; }
+        button { padding: 12px 25px; background: #D4AF37; border: none; cursor: pointer; border-radius: 5px; font-size: 16px; font-weight: bold; }
+        #result { margin-top: 30px; display: flex; flex-wrap: wrap; justify-content: center; }
+        .item { margin: 15px; width: 300px; }
+        img { max-width: 100%; border: 2px solid #D4AF37; display: block; margin: 0 auto; }
     </style>
 </head>
 <body>
@@ -18,6 +20,7 @@
     <div id="result"></div>
 
     <script>
+        // 請確認這串網址與你 Google Apps Script 部署的「網頁應用程式」網址完全一致
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzlx2FwzCjxBIPSfuSVw75_t4OOO0EbTLLasQaFTOKUrqGd1MeLk2m0IPvYw4xhJ6NZ/exec";
         
         async function searchPhoto() {
@@ -27,20 +30,25 @@
             
             resDiv.innerHTML = "搜尋中...";
             try {
-                const response = await fetch(GAS_URL + "?q=" + encodeURIComponent(query));
+                // 使用時間戳記 (timestamp) 來強迫瀏覽器不要讀取舊的暫存檔案
+                const response = await fetch(`${GAS_URL}?q=${encodeURIComponent(query)}&t=${new Date().getTime()}`);
                 const data = await response.json();
                 
                 resDiv.innerHTML = "";
-                if (data.length > 0) {
+                if (Array.isArray(data) && data.length > 0) {
                     data.forEach(item => {
-                        // 這裡使用修正後的屬性名稱 fileName 和 fileUrl
-                        resDiv.innerHTML += `<div><img src="${item.fileUrl}" alt="${item.fileName}"><p>${item.fileName}</p></div>`;
+                        resDiv.innerHTML += `
+                            <div class="item">
+                                <img src="${item.url}" alt="${item.name}">
+                                <p>${item.name}</p>
+                            </div>`;
                     });
                 } else {
-                    resDiv.innerHTML = "找不到喔！";
+                    resDiv.innerHTML = "找不到相關照片喔！";
                 }
             } catch (e) {
-                resDiv.innerHTML = "連線錯誤，請確認 GAS 部署是否更新。";
+                resDiv.innerHTML = "連線失敗，請檢查 GAS 部署權限。";
+                console.error("Error details:", e);
             }
         }
     </script>
