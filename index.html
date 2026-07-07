@@ -1,29 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6IFt7InNyYyI6ICIiLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3BuZyJ9XX0=">
     <style>
-        body { font-family: sans-serif; padding: 20px; text-align: center; }
-        input { padding: 10px; width: 70%; }
-        button { padding: 10px; }
-        .img-card { margin-top: 20px; }
-        img { width: 100%; max-width: 400px; border-radius: 10px; }
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        input { width: 80%; padding: 10px; margin-bottom: 10px; }
+        .result-item { margin-top: 20px; }
+        img { max-width: 100%; border-radius: 8px; }
     </style>
 </head>
 <body>
     <input type="text" id="q" placeholder="例如: 3斑比">
-    <button onclick="runSearch()">搜尋</button>
+    <button onclick="doSearch()">搜尋</button>
     <div id="res"></div>
 
     <script>
-        function runSearch() {
+        function doSearch() {
             var q = document.getElementById('q').value;
             document.getElementById('res').innerText = "搜尋中...";
             google.script.run.withSuccessHandler(function(data) {
                 var res = document.getElementById('res');
                 res.innerHTML = "";
                 data.forEach(function(i) {
-                    res.innerHTML += '<div class="img-card"><p>'+i.name+'</p><img src="'+i.url+'"></div>';
+                    res.innerHTML += '<div class="result-item"><p>'+i.name+'</p><img src="'+i.url+'"></div>';
                 });
             }).searchFiles(q);
         }
