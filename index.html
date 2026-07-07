@@ -27,20 +27,20 @@
             
             resDiv.innerHTML = "搜尋中...";
             try {
-                // 使用 encodeURIComponent 確保中文能正確發送給 GAS
                 const response = await fetch(GAS_URL + "?q=" + encodeURIComponent(query));
                 const data = await response.json();
                 
                 resDiv.innerHTML = "";
                 if (data.length > 0) {
                     data.forEach(item => {
-                        resDiv.innerHTML += `<div><img src="${item.url}" alt="${item.name}">${item.name}</div>`;
+                        // 這裡使用修正後的屬性名稱 fileName 和 fileUrl
+                        resDiv.innerHTML += `<div><img src="${item.fileUrl}" alt="${item.fileName}"><p>${item.fileName}</p></div>`;
                     });
                 } else {
-                    resDiv.innerHTML = "找不到喔！請確認館號與名稱正確。";
+                    resDiv.innerHTML = "找不到喔！";
                 }
             } catch (e) {
-                resDiv.innerHTML = "連線錯誤，請確認網址或權限。";
+                resDiv.innerHTML = "連線錯誤，請確認 GAS 部署是否更新。";
             }
         }
     </script>
