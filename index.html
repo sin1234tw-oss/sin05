@@ -3,98 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
     <title>享樂照片搜尋</title>
     <style>
-        /* 霓虹黑色風格 */
-        body { 
-            background: #050505; 
-            color: #fff; 
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-            text-align: center; 
-            padding: 20px;
-            margin: 0;
-        }
-        
-        h1 { 
-            color: #ff00ff; 
-            text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; 
-            font-size: 2.2em; 
-            margin-bottom: 30px;
-        }
-
-        /* 手機版搜尋欄 */
-        input { 
-            background: #111; 
-            border: 2px solid #00f3ff; 
-            color: #fff; 
-            padding: 20px; 
-            font-size: 1.2em; 
-            border-radius: 12px; 
-            width: 90%; 
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        button { 
-            background: #ff00ff; 
-            border: none; 
-            padding: 15px 40px; 
-            border-radius: 12px; 
-            color: #fff; 
-            font-size: 1.2em; 
-            font-weight: bold; 
-            cursor: pointer; 
-            box-shadow: 0 0 15px #ff00ff;
-            width: 90%;
-        }
-
-        #res { margin-top: 40px; }
-        
-        .result-item img { 
-            max-width: 95%; 
-            border: 2px solid #00f3ff; 
-            box-shadow: 0 0 20px #00f3ff; 
-            border-radius: 15px; 
-            margin-top: 20px;
-        }
+        body { background: #000; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
+        h1 { color: #ff00ff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; margin-bottom: 30px; }
+        input { background: #111; border: 2px solid #00f3ff; color: #fff; padding: 20px; font-size: 1.2em; border-radius: 12px; width: 90%; margin-bottom: 20px; text-align: center; }
+        button { background: #ff00ff; border: none; padding: 15px 40px; border-radius: 12px; color: #fff; font-size: 1.2em; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px #ff00ff; width: 90%; }
+        .result-img { max-width: 95%; border: 3px solid #00f3ff; box-shadow: 0 0 20px #00f3ff; border-radius: 15px; margin-top: 20px; display: block; margin-left: auto; margin-right: auto; }
     </style>
 </head>
 <body>
-
     <h1>享樂照片搜尋</h1>
-    
-    <input type="text" id="q" placeholder="例如：3斑比" inputmode="search">
+    <input type="text" id="q" placeholder="例如：3斑比">
     <button onclick="doSearch()">搜尋</button>
-
     <div id="res"></div>
 
     <script>
         function doSearch() {
             const q = document.getElementById('q').value;
             const res = document.getElementById('res');
+            res.innerHTML = "";
+            if (q.length < 2) { alert("請輸入如：3斑比"); return; }
             
-            if (q.length < 2) {
-                alert("請輸入格式，如：3斑比");
-                return;
-            }
-            
-            // 取第一個字作為資料夾，剩下作為檔名
             const folder = q.substring(0, 1);
             const keyword = q.substring(1);
             
-            // 拼接路徑
-            const imgUrl = `./${folder}/${keyword}.jpg`;
+            let filesToTry = [`${keyword}.jpg`];
+            for (let i = 1; i <= 20; i++) { filesToTry.push(`${keyword}-客評${i}.jpg`); }
             
-            res.innerHTML = `
-                <div class="result-item">
-                    <p style="color:#00f3ff;">搜尋結果：${folder}館 - ${keyword}</p>
-                    <img src="${imgUrl}" onerror="this.src='https://via.placeholder.com/300x400?text=無此圖'">
-                </div>
-            `;
+            filesToTry.forEach(fileName => {
+                const path = `./${folder}/${fileName}`;
+                const img = document.createElement("img");
+                img.src = path;
+                img.className = "result-img";
+                img.style.display = "none";
+                img.onload = function() { img.style.display = "block"; };
+                img.onerror = function() { img.remove(); };
+                res.appendChild(img);
+            });
         }
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
     </script>
 </body>
 </html>
