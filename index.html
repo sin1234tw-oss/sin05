@@ -8,7 +8,9 @@
     <title>享樂照片搜尋</title>
     <style>
         body { background: #000; color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
-        h1 { color: #ff00ff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; margin-bottom: 30px; }
+        h1 { color: #ff00ff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; margin-bottom: 20px; }
+        /* 新增告示欄樣式 */
+        .notice { background: #111; border: 1px solid #00f3ff; color: #00f3ff; padding: 10px; margin: 0 auto 20px auto; border-radius: 12px; width: 90%; font-size: 0.9em; box-shadow: 0 0 10px #00f3ff; text-align: left; }
         input { background: #111; border: 2px solid #00f3ff; color: #fff; padding: 20px; font-size: 1.2em; border-radius: 12px; width: 90%; margin-bottom: 20px; text-align: center; }
         button { background: #ff00ff; border: none; padding: 15px 40px; border-radius: 12px; color: #fff; font-size: 1.2em; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px #ff00ff; width: 90%; }
         .result-img { max-width: 95%; border: 3px solid #00f3ff; box-shadow: 0 0 20px #00f3ff; border-radius: 15px; margin-top: 20px; display: block; margin-left: auto; margin-right: auto; }
@@ -16,6 +18,12 @@
 </head>
 <body>
     <h1>享樂照片搜尋</h1>
+
+    <div class="notice">
+        1館夏威夷=1 / 2館沐湯會=2 / 3館愛寶=3 / 4館=4<br>
+        5館潘朵拉=5 / 6館手中情=6 / 7館樂鑽=7
+    </div>
+
     <input type="text" id="q" placeholder="例如：3斑比">
     <button onclick="doSearch()">搜尋</button>
     <div id="res"></div>
