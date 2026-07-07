@@ -7,8 +7,8 @@
         body { background: #000; color: #D4AF37; font-family: sans-serif; text-align: center; padding: 20px; }
         input { padding: 12px; width: 250px; background: #111; border: 2px solid #D4AF37; color: #fff; border-radius: 5px; }
         button { padding: 12px 25px; background: #D4AF37; border: none; cursor: pointer; border-radius: 5px; }
-        #result { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 30px; }
-        img { max-width: 300px; border: 2px solid #D4AF37; }
+        #result { margin-top: 30px; }
+        img { max-width: 300px; display: block; margin: 10px auto; border: 2px solid #D4AF37; }
     </style>
 </head>
 <body>
@@ -22,25 +22,25 @@
         
         async function searchPhoto() {
             const query = document.getElementById("query").value;
-            const resultDiv = document.getElementById("result");
+            const resDiv = document.getElementById("result");
             if(!query) return;
             
-            resultDiv.innerHTML = "搜尋中...";
+            resDiv.innerHTML = "搜尋中...";
             try {
-                // 使用 encodeURIComponent 確保中文能正確傳遞
-                const res = await fetch(GAS_URL + "?q=" + encodeURIComponent(query));
-                const data = await res.json();
+                // 使用 encodeURIComponent 確保中文能正確發送給 GAS
+                const response = await fetch(GAS_URL + "?q=" + encodeURIComponent(query));
+                const data = await response.json();
                 
-                resultDiv.innerHTML = "";
+                resDiv.innerHTML = "";
                 if (data.length > 0) {
                     data.forEach(item => {
-                        resultDiv.innerHTML += `<img src="${item.url}" alt="${item.name}">`;
+                        resDiv.innerHTML += `<div><img src="${item.url}" alt="${item.name}">${item.name}</div>`;
                     });
                 } else {
-                    resultDiv.innerHTML = "找不到喔！請檢查編號或名稱。";
+                    resDiv.innerHTML = "找不到喔！請確認館號與名稱正確。";
                 }
             } catch (e) {
-                resultDiv.innerHTML = "連線失敗，請稍後再試。";
+                resDiv.innerHTML = "連線錯誤，請確認網址或權限。";
             }
         }
     </script>
