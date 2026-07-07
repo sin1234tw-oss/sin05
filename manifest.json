@@ -1,0 +1,15 @@
+{
+  "name": "享樂照片搜尋",
+  "short_name": "享樂搜尋",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#D4AF37",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
