@@ -2,54 +2,39 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>享樂照片搜尋</title>
     <style>
-        body { background: #000; color: #D4AF37; font-family: sans-serif; text-align: center; padding: 20px; }
-        input { padding: 12px; width: 250px; background: #111; border: 2px solid #D4AF37; color: #fff; border-radius: 5px; font-size: 16px; }
-        button { padding: 12px 25px; background: #D4AF37; border: none; cursor: pointer; border-radius: 5px; font-size: 16px; font-weight: bold; }
-        #result { margin-top: 30px; display: flex; flex-wrap: wrap; justify-content: center; }
-        .item { margin: 15px; width: 300px; }
-        img { max-width: 100%; border: 2px solid #D4AF37; display: block; margin: 0 auto; }
+        body { background: #000; color: #D4AF37; text-align: center; font-family: sans-serif; }
+        input { padding: 10px; width: 250px; background: #111; border: 2px solid #D4AF37; color: #fff; }
+        button { padding: 10px 20px; background: #D4AF37; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
     <h1>享樂照片搜尋</h1>
     <input type="text" id="query" placeholder="範例: 3斑比">
-    <button onclick="searchPhoto()">搜尋</button>
-    <div id="result"></div>
+    <button onclick="search()">搜尋</button>
+    <div id="result" style="margin-top:20px;"></div>
 
     <script>
-        // 請確認這串網址與你 Google Apps Script 部署的「網頁應用程式」網址完全一致
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzlx2FwzCjxBIPSfuSVw75_t4OOO0EbTLLasQaFTOKUrqGd1MeLk2m0IPvYw4xhJ6NZ/exec";
         
-        async function searchPhoto() {
-            const query = document.getElementById("query").value;
-            const resDiv = document.getElementById("result");
-            if(!query) return;
-            
-            resDiv.innerHTML = "搜尋中...";
+        async function search() {
+            const q = document.getElementById("query").value;
+            const res = document.getElementById("result");
+            res.innerHTML = "搜尋中...";
             try {
-                // 使用時間戳記 (timestamp) 來強迫瀏覽器不要讀取舊的暫存檔案
-                const response = await fetch(`${GAS_URL}?q=${encodeURIComponent(query)}&t=${new Date().getTime()}`);
+                // 加入時間戳記避免快取
+                const response = await fetch(GAS_URL + "?q=" + encodeURIComponent(q) + "&t=" + Date.now());
                 const data = await response.json();
-                
-                resDiv.innerHTML = "";
-                if (Array.isArray(data) && data.length > 0) {
+                res.innerHTML = "";
+                if(data.length > 0) {
                     data.forEach(item => {
-                        resDiv.innerHTML += `
-                            <div class="item">
-                                <img src="${item.url}" alt="${item.name}">
-                                <p>${item.name}</p>
-                            </div>`;
+                        res.innerHTML += `<div><img src="${item.url}" alt="${item.name}"><p>${item.name}</p></div>`;
                     });
                 } else {
-                    resDiv.innerHTML = "找不到相關照片喔！";
+                    res.innerHTML = "找不到檔案";
                 }
-            } catch (e) {
-                resDiv.innerHTML = "連線失敗，請檢查 GAS 部署權限。";
-                console.error("Error details:", e);
-            }
+            } catch(e) { res.innerHTML = "讀取錯誤"; }
         }
     </script>
 </body>
