@@ -1,60 +1,31 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>圖片搜尋器</title>
+    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6IFt7InNyYyI6ICIiLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3BuZyJ9XX0=">
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        #res { margin-top: 20px; }
-        .item { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 8px; width: 300px; }
-        img { max-width: 100%; display: block; margin-top: 10px; }
+        body { font-family: sans-serif; padding: 20px; text-align: center; }
+        input { padding: 10px; width: 70%; }
+        button { padding: 10px; }
+        .img-card { margin-top: 20px; }
+        img { width: 100%; max-width: 400px; border-radius: 10px; }
     </style>
 </head>
 <body>
-
-    <h2>館別圖片搜尋</h2>
     <input type="text" id="q" placeholder="例如: 3斑比">
-    <button onclick="search()">搜尋</button>
-
+    <button onclick="runSearch()">搜尋</button>
     <div id="res"></div>
 
     <script>
-        // 這是你的 Google Apps Script 部署網址
-        const scriptUrl = "https://script.google.com/macros/s/AKfycbzlx2FwzCjxBIPSfuSVw75_t4OOO0EbTLLasQaFTOKUrqGd1MeLk2m0IPvYw4xhJ6NZ/exec";
-
-        async function search() {
-            const q = document.getElementById('q').value;
-            const res = document.getElementById('res');
-            
-            if(!q) { alert("請輸入搜尋內容"); return; }
-            
-            res.innerHTML = "搜尋中，請稍候...";
-
-            try {
-                // 加上時間戳記避免快取
-                const response = await fetch(`${scriptUrl}?q=${encodeURIComponent(q)}&t=${Date.now()}`);
-                const data = await response.json();
-                
-                res.innerHTML = ""; // 清空顯示區
-
-                if (data.error) {
-                    res.innerHTML = "系統錯誤: " + data.error;
-                } else if (data.length === 0) {
-                    res.innerHTML = "找不到符合的檔案";
-                } else {
-                    data.forEach(item => {
-                        res.innerHTML += `
-                            <div class="item">
-                                <strong>${item.name}</strong>
-                                <img src="${item.url}" alt="${item.name}">
-                                <br><a href="${item.url}" target="_blank">點擊下載原始檔</a>
-                            </div>`;
-                    });
-                }
-            } catch (e) {
-                res.innerHTML = "連線發生錯誤，請檢查網路連線。";
-                console.error(e);
-            }
+        function runSearch() {
+            var q = document.getElementById('q').value;
+            document.getElementById('res').innerText = "搜尋中...";
+            google.script.run.withSuccessHandler(function(data) {
+                var res = document.getElementById('res');
+                res.innerHTML = "";
+                data.forEach(function(i) {
+                    res.innerHTML += '<div class="img-card"><p>'+i.name+'</p><img src="'+i.url+'"></div>';
+                });
+            }).searchFiles(q);
         }
     </script>
 </body>
