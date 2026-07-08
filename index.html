@@ -29,6 +29,11 @@
 
         input { background: #111; border: 2px solid #00f3ff; color: #fff; padding: 20px; font-size: 1.2em; border-radius: 12px; width: 90%; margin-bottom: 20px; text-align: center; }
         button { background: #ff00ff; border: none; padding: 15px 40px; border-radius: 12px; color: #fff; font-size: 1.2em; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px #ff00ff; width: 90%; }
+        
+        /* 提示文字與底部樣式 */
+        .msg { color: #ff00ff; margin-top: 20px; font-size: 1.2em; }
+        .footer { color: #555; margin-top: 40px; font-size: 0.8em; }
+        
         .result-img { max-width: 95%; border: 3px solid #00f3ff; box-shadow: 0 0 20px #00f3ff; border-radius: 15px; margin-top: 20px; display: block; margin-left: auto; margin-right: auto; }
     </style>
 </head>
@@ -49,18 +54,23 @@
     <button onclick="doSearch()">搜尋</button>
     <div id="res"></div>
 
+    <div class="footer">sin製作</div>
+
     <script>
         function doSearch() {
             const q = document.getElementById('q').value;
             const res = document.getElementById('res');
             res.innerHTML = "";
-            if (q.length < 2) { alert("請輸入如：3斑比"); return; }
+            
+            if (q.length < 2) { 
+                res.innerHTML = `<p class="msg">請輸入如：3斑比</p>`; 
+                return; 
+            }
             
             const folder = q.substring(0, 1);
             const keyword = q.substring(1);
             
             let filesToTry = [`${keyword}.jpg`];
-            // 自動搜尋客評 1 到 20
             for (let i = 1; i <= 20; i++) { filesToTry.push(`${keyword}-客評${i}.jpg`); }
             
             filesToTry.forEach(fileName => {
